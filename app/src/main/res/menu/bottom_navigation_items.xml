@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_snacks"
+        android:title="@string/sandwiches"/>
+    <item
+        android:id="@+id/action_promotions"
+        android:title="@string/promotions"/>
+    <item
+        android:id="@+id/action_order"
+        android:title="@string/order"/>
+</menu>

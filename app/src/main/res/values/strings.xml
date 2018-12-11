@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Lanchonete</string>
+    <string name="sandwiches_title">Lanches</string>
+    <string name="sandwiches">Lanches</string>
+    <string name="promotions">Promoções</string>
+    <string name="order">Pedido</string>
+</resources>
