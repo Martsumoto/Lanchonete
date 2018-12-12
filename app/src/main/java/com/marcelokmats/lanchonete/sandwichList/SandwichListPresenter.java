@@ -1,13 +1,13 @@
-package com.marcelokmats.lanchonete.snackList;
+package com.marcelokmats.lanchonete.sandwichList;
 
 import com.marcelokmats.lanchonete.model.Ingredient;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-public interface SnackListPresenter {
+public interface SandwichListPresenter {
 
-    void fetchIngredients();
+    void fetchSandwiches();
 
     BigDecimal calculatePrice(List<Ingredient> ingredients);
 

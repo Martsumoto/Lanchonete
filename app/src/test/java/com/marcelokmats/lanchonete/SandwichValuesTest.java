@@ -1,9 +1,9 @@
 package com.marcelokmats.lanchonete;
 
 import com.marcelokmats.lanchonete.model.Ingredient;
-import com.marcelokmats.lanchonete.snackList.SnackListPresenter;
-import com.marcelokmats.lanchonete.snackList.SnackListPresenterImpl;
-import com.marcelokmats.lanchonete.snackList.SnackListView;
+import com.marcelokmats.lanchonete.sandwichList.SandwichListPresenter;
+import com.marcelokmats.lanchonete.sandwichList.SandwichListPresenterImpl;
+import com.marcelokmats.lanchonete.sandwichList.SandwichListView;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -18,13 +18,13 @@ import static org.junit.Assert.assertEquals;
 
 public class SandwichValuesTest {
 
-    @Mock SnackListView mView;
-    SnackListPresenter mPresenter;
+    @Mock SandwichListView mView;
+    SandwichListPresenter mPresenter;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mPresenter = new SnackListPresenterImpl(mView);
+        mPresenter = new SandwichListPresenterImpl(mView);
     }
 
 

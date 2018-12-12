@@ -1,8 +1,11 @@
 package com.marcelokmats.lanchonete.util;
 
+import android.util.SparseArray;
+
 import com.marcelokmats.lanchonete.model.Ingredient;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PriceUtil {
@@ -15,6 +18,18 @@ public class PriceUtil {
     // For light promotion
     public static final int LETTUCE_ID = 1;
     public static final int BACON_ID = 2;
+
+    public static BigDecimal value(List<Integer> ingredientIdList, SparseArray<Ingredient> allIngredients) {
+        List<Ingredient> ingredientList = new ArrayList<>();
+
+        for (Integer ingredientId : ingredientIdList) {
+            if (allIngredients.get(ingredientId) != null) {
+                ingredientList.add(allIngredients.get(ingredientId));
+            }
+        }
+
+        return PriceUtil.value(ingredientList);
+    }
 
     public static BigDecimal value(List<Ingredient> ingredients) {
         BigDecimal value = BigDecimal.ZERO;

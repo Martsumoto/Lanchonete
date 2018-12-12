@@ -7,15 +7,20 @@
     android:orientation="vertical">
 
     <TextView
-        android:text="@string/sandwiches_title"
+        android:id="@+id/txtFragmentTitle"
         style="@style/FragmentTitle" />
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/listHeroesRecents"
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
     <ProgressBar
-        android:id="@+id/progressBarRecents"
+        android:id="@+id/progressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"/>
+    <TextView
+        android:id="@+id/txtEmptyListMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
 </LinearLayout>
