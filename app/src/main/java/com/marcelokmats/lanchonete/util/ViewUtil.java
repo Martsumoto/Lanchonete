@@ -6,23 +6,29 @@ import android.widget.TextView;
 
 public class ViewUtil {
 
-    public static void showProgressBar(View content, ProgressBar progressBar, boolean showProgressBar) {
-        if (showProgressBar) {
-            content.setVisibility(View.GONE);
-            progressBar.setVisibility(View.VISIBLE);
-        } else {
-            content.setVisibility(View.VISIBLE);
-            progressBar.setVisibility(View.GONE);
-        }
+    public enum Type {
+        CONTENT,
+        PROGRESSBAR,
+        ERROR
     }
 
-    public static void showEmptyListContent(View content, TextView emptyListMessage, boolean isEmpty) {
-        if (isEmpty) {
-            emptyListMessage.setVisibility(View.VISIBLE);
-            content.setVisibility(View.GONE);
-        } else {
-            emptyListMessage.setVisibility(View.GONE);
-            content.setVisibility(View.VISIBLE);
+    public static void toggleVisibility(View content, View progressBar, View errorMessage, ViewUtil.Type type) {
+        switch (type) {
+            case CONTENT:
+                content.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.GONE);
+                errorMessage.setVisibility(View.GONE);
+                break;
+            case PROGRESSBAR:
+                content.setVisibility(View.GONE);
+                progressBar.setVisibility(View.VISIBLE);
+                errorMessage.setVisibility(View.GONE);
+                break;
+            case ERROR:
+                content.setVisibility(View.GONE);
+                progressBar.setVisibility(View.GONE);
+                errorMessage.setVisibility(View.VISIBLE);
+                break;
         }
     }
 }

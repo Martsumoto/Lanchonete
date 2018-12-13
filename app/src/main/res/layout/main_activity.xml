@@ -13,11 +13,25 @@
         app:menu="@menu/bottom_navigation_items"
         app:labelVisibilityMode="labeled"/>
 
+    <TextView
+        android:id="@+id/txtEmptyListMessage"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_alignParentTop="true"
+        android:layout_above="@id/bottomNavigationView" />
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:foregroundGravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_alignParentTop="true"/>
     <FrameLayout
         android:id="@+id/frameLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:animateLayoutChanges="true"
         android:layout_above="@id/bottomNavigationView"/>
 
 </RelativeLayout>

@@ -8,8 +8,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.marcelokmats.lanchonete.orderList.OrderListFragment;
 import com.marcelokmats.lanchonete.orderList.OrderListPresenter;
@@ -20,11 +23,14 @@ import com.marcelokmats.lanchonete.promotionList.PromotionListPresenterImpl;
 import com.marcelokmats.lanchonete.sandwichList.SandwichListFragment;
 import com.marcelokmats.lanchonete.sandwichList.SandwichListPresenter;
 import com.marcelokmats.lanchonete.sandwichList.SandwichListPresenterImpl;
+import com.marcelokmats.lanchonete.util.ViewUtil;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends FragmentActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends FragmentActivity implements MainView, BottomNavigationView.OnNavigationItemSelectedListener {
 
     private static final String SANDWICHES_FRAGMENT = "SANDWICHES_FRAGMENT";
     private static final String PROMOTIONS_FRAGMENT = "PROMOTIONS_FRAGMENT";
@@ -37,6 +43,12 @@ public class MainActivity extends FragmentActivity implements BottomNavigationVi
     @BindView(R.id.frameLayout)
     FrameLayout mFrameLayout;
 
+    @BindView(R.id.progressBar)
+    ProgressBar mProgressBar;
+
+    @BindView(R.id.txtEmptyListMessage)
+    TextView mTxtEmptyListMessage;
+
     private SandwichListFragment mSandwichListFragment = null;
     private SandwichListPresenter mSandwichListPresenter;
 
@@ -46,14 +58,32 @@ public class MainActivity extends FragmentActivity implements BottomNavigationVi
     private OrderListFragment mOrderListFragment = null;
     private OrderListPresenter mOrderListPresenter;
 
+    private int mSelectedFragment = R.id.action_sandwich;
+
+    @Inject
+    MainPresenter mPresenter;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
         ButterKnife.bind(this);
 
-        this.mBottomNavigationView.setOnNavigationItemSelectedListener(this);
+        MainComponent component = DaggerMainComponent.builder().mainModule(
+                new MainModule(this)).build();
+        component.injectMainPresenter(this);
         this.setupInitialFragment(savedInstanceState);
+
+        mPresenter.prefetchData();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (this.mPresenter != null) {
+            this.mPresenter.onDestroy();
+        }
     }
 
     @Override
@@ -68,17 +98,38 @@ public class MainActivity extends FragmentActivity implements BottomNavigationVi
         return true;
     }
 
-    private void setupInitialFragment(Bundle savedInstanceState) {
-        int selectedFragment = R.id.action_sandwich;
+    @Override
+    public void onValuesFetched() {
+        this.mBottomNavigationView.setOnNavigationItemSelectedListener(this);
+        this.replaceFragment(mSelectedFragment);
+    }
 
+    @Override
+    public void showTimeoutError() {
+        this.mTxtEmptyListMessage.setText(R.string.server_error);
+        ViewUtil.toggleVisibility(this.mFrameLayout, this.mProgressBar,
+                this.mTxtEmptyListMessage, ViewUtil.Type.ERROR);
+    }
+
+    @Override
+    public void showProgressBar() {
+        ViewUtil.toggleVisibility(this.mFrameLayout, this.mProgressBar,
+                this.mTxtEmptyListMessage, ViewUtil.Type.PROGRESSBAR);
+    }
+
+    @Override
+    public void hideProgressBar() {
+        ViewUtil.toggleVisibility(this.mFrameLayout, this.mProgressBar,
+                this.mTxtEmptyListMessage, ViewUtil.Type.CONTENT);
+    }
+
+    private void setupInitialFragment(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             FragmentManager fm = getSupportFragmentManager();
             mSandwichListFragment = (SandwichListFragment) fm.findFragmentByTag(SANDWICHES_FRAGMENT);
 
-            selectedFragment = savedInstanceState.getInt(SELECTED_FRAGMENT);
+            mSelectedFragment = savedInstanceState.getInt(SELECTED_FRAGMENT);
         }
-
-        this.replaceFragment(selectedFragment);
     }
 
     private void replaceFragment(int id) {

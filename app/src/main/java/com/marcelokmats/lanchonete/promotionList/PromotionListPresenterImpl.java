@@ -6,19 +6,21 @@ import android.util.SparseArray;
 import com.marcelokmats.lanchonete.api.ApiUtils;
 import com.marcelokmats.lanchonete.model.Ingredient;
 import com.marcelokmats.lanchonete.model.Promotion;
+import com.marcelokmats.lanchonete.util.RxUtils;
 
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
-public class PromotionListPresenterImpl implements PromotionListPresenter, Callback<List<Promotion>> {
+public class PromotionListPresenterImpl implements PromotionListPresenter {
 
     private PromotionListView mView;
 
     private SparseArray<Ingredient> mIngredients;
 
+    private Disposable mPromotionDisposable;
 
     public PromotionListPresenterImpl(PromotionListView view) {
         this.mView = view;
@@ -26,19 +28,29 @@ public class PromotionListPresenterImpl implements PromotionListPresenter, Callb
 
     @Override
     public void fetchPromotions() {
-        Call<List<Promotion>> call = ApiUtils.getInterface().getPromotions();
-        call.enqueue(this);
+        this.mView.showProgressBar();
+        mPromotionDisposable = ApiUtils.getInterface().getPromotions().subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::onPromotionsLoaded, this::onPromtionError);
     }
 
     @Override
-    public void onResponse(Call<List<Promotion>> call, Response<List<Promotion>> response) {
-        if (response != null && response.body() != null) {
-            this.mView.setPromotionList(response.body());
+    public void onDestroy() {
+        RxUtils.unsubscribe(this.mPromotionDisposable);
+    }
+
+    private void onPromotionsLoaded(List<Promotion> promotionList) {
+        if (promotionList != null) {
+            this.mView.setPromotionList(promotionList);
         }
+
+        this.mView.hideProgressBar();
     }
 
-    @Override
-    public void onFailure(Call<List<Promotion>> call, Throwable t) {
+    private void onPromtionError(Throwable t) {
         Log.e("Lanchonete", "Error while fetching promotions", t);
+        this.mView.hideProgressBar();
+        this.mView.showTimeoutError();
     }
+
 }

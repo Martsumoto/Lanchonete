@@ -10,7 +10,12 @@ import java.util.List;
 public interface SandwichDetailsView {
 
     void setActionBarTitle(String title);
-    void showProgressBar(boolean showProgressBar);
     void populateSandwichInfo(Sandwich sandwich, List<Integer> ingredientList, SparseArray<Ingredient> allIngredientList);
     void finishActivity();
+
+    void showTimeoutError();
+
+    void showProgressBar();
+
+    void hideProgressBar();
 }

@@ -12,8 +12,8 @@ public interface SandwichDetailsPresenter {
     void fetchSandwichIngredients();
     void setSandwich(Sandwich sandwich);
     void insertSandwich();
-    void insertionSuccessful();
     void updateCustomizedSandwich(List<Integer>customIngredientsId);
+    void onDestroy();
 
     SparseArray<Ingredient> getAllIngredients();
     List<Integer> getCustomIngredients();

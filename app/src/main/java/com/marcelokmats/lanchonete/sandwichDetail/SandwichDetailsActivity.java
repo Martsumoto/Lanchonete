@@ -4,12 +4,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.SparseArray;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -24,6 +24,7 @@ import com.marcelokmats.lanchonete.util.ImageUtil;
 import com.marcelokmats.lanchonete.util.IngredientUtil;
 import com.marcelokmats.lanchonete.util.NumberFormatterUtil;
 import com.marcelokmats.lanchonete.util.PriceUtil;
+import com.marcelokmats.lanchonete.util.ViewUtil;
 
 import java.util.List;
 
@@ -39,8 +40,9 @@ public class SandwichDetailsActivity extends AppCompatActivity implements Sandwi
     @BindView(R.id.imgSandwich) ImageView mImgSandwich;
     @BindView(R.id.txtPrice) TextView mTxtPrice;
     @BindView(R.id.txtIngredients) TextView mTxtIngredients;
-    @BindView(R.id.btnAddCart) Button mBtnAddCart;
     @BindView(R.id.btnCustomize) TextView mBtnCustomize;
+    @BindView(R.id.txtEmptyListMessage) TextView mTxtEmptyListMessage;
+    @BindView(R.id.fabAddToCart) FloatingActionButton mFabAddtoCart;
 
     @Inject
     SandwichDetailsPresenter mPresenter;
@@ -54,17 +56,25 @@ public class SandwichDetailsActivity extends AppCompatActivity implements Sandwi
                 new SandwichDetailsModule(this)).build();
         component.injectSandwichDetailsPresenter(this);
 
-        this.mBtnAddCart.setOnClickListener(this);
+        this.mFabAddtoCart.setOnClickListener(this);
         this.mBtnCustomize.setOnClickListener(this);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        this.showProgressBar(true);
         this.setActionBarTitle(null);
         this.loadIntent();
         this.mPresenter.fetchSandwichIngredients();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (this.mPresenter != null) {
+            this.mPresenter.onDestroy();
+        }
     }
 
     @Override
@@ -81,16 +91,23 @@ public class SandwichDetailsActivity extends AppCompatActivity implements Sandwi
             }
         }
     }
+    @Override
+    public void showTimeoutError() {
+        this.mTxtEmptyListMessage.setText(R.string.server_error);
+        ViewUtil.toggleVisibility(this.mLayoutContent, this.mProgressBar,
+                this.mTxtEmptyListMessage, ViewUtil.Type.ERROR);
+    }
 
     @Override
-    public void showProgressBar(boolean showProgressBar) {
-        if (showProgressBar) {
-            this.mProgressBar.setVisibility(View.VISIBLE);
-            this.mLayoutContent.setVisibility(View.GONE);
-        } else {
-            this.mProgressBar.setVisibility(View.GONE);
-            this.mLayoutContent.setVisibility(View.VISIBLE);
-        }
+    public void showProgressBar() {
+        ViewUtil.toggleVisibility(this.mLayoutContent, this.mProgressBar,
+                this.mTxtEmptyListMessage, ViewUtil.Type.PROGRESSBAR);
+    }
+
+    @Override
+    public void hideProgressBar() {
+        ViewUtil.toggleVisibility(this.mLayoutContent, this.mProgressBar,
+                this.mTxtEmptyListMessage, ViewUtil.Type.CONTENT);
     }
 
     @Override
@@ -135,7 +152,7 @@ public class SandwichDetailsActivity extends AppCompatActivity implements Sandwi
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == this.mBtnAddCart.getId()) {
+        if (v.getId() == this.mFabAddtoCart.getId()) {
             this.mPresenter.insertSandwich();
         } else if (v.getId() == this.mBtnCustomize.getId()) {
             this.showCustomizeSandwichDialog();

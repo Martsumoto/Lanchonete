@@ -1,30 +1,23 @@
 package com.marcelokmats.lanchonete.orderList;
 
 import android.util.Log;
-import android.util.SparseArray;
 
 import com.marcelokmats.lanchonete.api.ApiUtils;
-import com.marcelokmats.lanchonete.model.Ingredient;
+import com.marcelokmats.lanchonete.api.Repository;
 import com.marcelokmats.lanchonete.model.Order;
-import com.marcelokmats.lanchonete.model.Sandwich;
-import com.marcelokmats.lanchonete.util.IngredientUtil;
+import com.marcelokmats.lanchonete.util.RxUtils;
 
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
-public class OrderListPresenterImpl implements OrderListPresenter, Callback<List<Order>> {
+public class OrderListPresenterImpl implements OrderListPresenter {
 
     private OrderListView mView;
 
-    private SparseArray<Ingredient> mIngredients;
-
-    private SparseArray<Ingredient> mAllIngredients;
-
-    private SparseArray<Sandwich> mAllSandwiches;
-
+    private Disposable mOrderDisposable;
 
     public OrderListPresenterImpl(OrderListView view) {
         this.mView = view;
@@ -32,55 +25,25 @@ public class OrderListPresenterImpl implements OrderListPresenter, Callback<List
 
     @Override
     public void fetchOrders() {
-        Call<List<Order>> call = ApiUtils.getInterface().getOrders();
-        call.enqueue(this);
+        this.mOrderDisposable = ApiUtils.getInterface().getOrders().subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::onOrdersLoaded, this::onError);
     }
 
     @Override
-    public void fetchAllIngredients() {
-        Call<List<Ingredient>> call = ApiUtils.getInterface().getIngredients();
-        call.enqueue(new AllIngredientsCallback(this));
+    public void onDestroy() {
+        RxUtils.unsubscribe(mOrderDisposable);
     }
 
-    @Override
-    public void fetchAllSandwiches() {
-        Call<List<Sandwich>> call = ApiUtils.getInterface().getSandwiches();
-        call.enqueue(new AllSandwichesCallback(this));
-    }
 
-    @Override
-    public void ingredientsFetched(List<Ingredient> ingredientList) {
-        mAllIngredients = IngredientUtil.transformListIntoSparseArray(ingredientList);
-
-        if (this.mAllSandwiches != null) {
-            this.fetchOrders();
+    private void onOrdersLoaded(List<Order> orderList) {
+        if (orderList != null) {
+            this.mView.setOrderList(orderList, Repository.getInstance().getAllSandwiches(),
+                    Repository.getInstance().getAllIngredients());
         }
     }
 
-    @Override
-    public void ingredientsSandwiches(List<Sandwich> sandwichList) {
-        mAllSandwiches = new SparseArray<>();
-
-        if (sandwichList != null) {
-            for (Sandwich sandwich : sandwichList) {
-                mAllSandwiches.put(sandwich.getId(), sandwich);
-            }
-        }
-
-        if (this.mAllIngredients != null) {
-            this.fetchOrders();
-        }
-    }
-
-    @Override
-    public void onResponse(Call<List<Order>> call, Response<List<Order>> response) {
-        if (response != null && response.body() != null) {
-            this.mView.setOrderList(response.body(), this.mAllSandwiches, this.mAllIngredients);
-        }
-    }
-
-    @Override
-    public void onFailure(Call<List<Order>> call, Throwable t) {
+    private void onError(Throwable t) {
         Log.e("Lanchonete", "Error while fetching order", t);
     }
 

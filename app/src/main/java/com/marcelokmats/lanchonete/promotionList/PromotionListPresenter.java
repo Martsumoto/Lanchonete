@@ -4,4 +4,5 @@ public interface PromotionListPresenter {
 
     void fetchPromotions();
 
+    void onDestroy();
 }

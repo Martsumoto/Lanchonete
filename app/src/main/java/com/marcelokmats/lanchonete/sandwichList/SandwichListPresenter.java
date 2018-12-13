@@ -11,4 +11,6 @@ public interface SandwichListPresenter {
 
     BigDecimal calculatePrice(List<Ingredient> ingredients);
 
+    void onDestroy();
+
 }

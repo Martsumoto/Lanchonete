@@ -9,6 +9,7 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -16,6 +17,8 @@ import com.marcelokmats.lanchonete.R;
 import com.marcelokmats.lanchonete.model.Ingredient;
 import com.marcelokmats.lanchonete.model.Order;
 import com.marcelokmats.lanchonete.model.Sandwich;
+import com.marcelokmats.lanchonete.util.NumberFormatterUtil;
+import com.marcelokmats.lanchonete.util.PriceUtil;
 import com.marcelokmats.lanchonete.util.ViewUtil;
 
 import java.util.List;
@@ -37,6 +40,12 @@ public class OrderListFragment extends Fragment implements OrderListView {
     @BindView(R.id.txtEmptyListMessage)
     TextView mTxtEmptyListMessage;
 
+    @BindView(R.id.layoutTotal)
+    LinearLayout mLayoutTotal;
+
+    @BindView(R.id.txtTotalPrice)
+    TextView mTxtTotalPrice;
+
     private OrderListPresenter mPresenter;
 
     @Nullable
@@ -52,10 +61,18 @@ public class OrderListFragment extends Fragment implements OrderListView {
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        if (this.mPresenter != null) {
+            this.mPresenter.onDestroy();
+        }
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
-        this.mPresenter.fetchAllIngredients();
-        this.mPresenter.fetchAllSandwiches();
+        this.mPresenter.fetchOrders();
     }
 
     @Override
@@ -68,6 +85,8 @@ public class OrderListFragment extends Fragment implements OrderListView {
                              SparseArray<Sandwich> sandwichList,
                              SparseArray<Ingredient> ingredientList) {
         this.showOrderList(orderList, sandwichList, ingredientList);
+
+        this.setupTotal(orderList, sandwichList, ingredientList);
     }
 
     private void showOrderList(List<Order> orderList,
@@ -75,15 +94,23 @@ public class OrderListFragment extends Fragment implements OrderListView {
                                SparseArray<Ingredient> ingredientList) {
         OrderListAdapter adapter;
 
-        ViewUtil.showProgressBar(this.mRecyclerView, this.mProgressBar, false);
-
         if (orderList != null && orderList.size() > 0) {
             adapter = new OrderListAdapter(this, orderList, sandwichList, ingredientList);
             mRecyclerView.setAdapter(adapter);
             mRecyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
-            ViewUtil.showEmptyListContent(this.mRecyclerView, this.mTxtEmptyListMessage, false);
+            ViewUtil.toggleVisibility(this.mRecyclerView, this.mProgressBar,
+                    this.mTxtEmptyListMessage, ViewUtil.Type.CONTENT);
         } else {
-            ViewUtil.showEmptyListContent(this.mRecyclerView, this.mTxtEmptyListMessage, true);
+            ViewUtil.toggleVisibility(this.mRecyclerView, this.mProgressBar,
+                    this.mTxtEmptyListMessage, ViewUtil.Type.ERROR);
         }
+    }
+
+    private void setupTotal(List<Order> orderList,
+                            SparseArray<Sandwich> sandwichList,
+                            SparseArray<Ingredient> ingredientList) {
+        this.mLayoutTotal.setVisibility(View.VISIBLE);
+        this.mTxtTotalPrice.setText(NumberFormatterUtil.getCurrencyString(
+                PriceUtil.value(orderList, sandwichList, ingredientList)));
     }
 }

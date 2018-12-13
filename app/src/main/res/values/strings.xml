@@ -6,7 +6,6 @@
     <string name="promotions">Promoções</string>
     <string name="order">Pedido</string>
     <string name="details_title">Detalhes</string>
-    <string name="add_to_cart_button">Adicionar ao carrinho</string>
     <string name="customize_button">Customizar</string>
     <string name="order_empty">Não há itens no pedido</string>
     <string name="promotion_empty">Não há promoções</string>
@@ -18,4 +17,7 @@
     <string name="ingredients_label">Ingredientes:</string>
     <string name="price_label">Preço:</string>
     <string name="total_label">Total:</string>
+    <string name="server_error">Não foi possível conectar-se ao servidor</string>
+    <string name="each">Cada:</string>
+    <string name="total">Total:</string>
 </resources>

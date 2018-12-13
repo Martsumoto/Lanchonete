@@ -1,10 +1,12 @@
 package com.marcelokmats.lanchonete.customizeSandwichDialog;
 
 import android.view.View;
-import android.widget.TextView;
 
 import com.marcelokmats.lanchonete.model.CustomIngredient;
 import com.marcelokmats.lanchonete.util.IngredientUtil;
+import com.marcelokmats.lanchonete.util.NumberFormatterUtil;
+
+import java.math.BigDecimal;
 
 public class AmountChangeButtonClickListener implements View.OnClickListener {
 
@@ -12,17 +14,17 @@ public class AmountChangeButtonClickListener implements View.OnClickListener {
 
     private int mAmountChange = 0;
 
-    private TextView mAmountTextView;
+    private IngredientsListAdapter.ViewHolder mViewHolder;
 
     private CustomizeSandwichView mView;
 
     public AmountChangeButtonClickListener(CustomIngredient customIngredient,
                                            int amountChange,
-                                           TextView amountTextView,
+                                           IngredientsListAdapter.ViewHolder viewHolder,
                                            CustomizeSandwichView view) {
         mCustomIngredient = customIngredient;
         mAmountChange = amountChange;
-        mAmountTextView = amountTextView;
+        mViewHolder = viewHolder;
         mView = view;
     }
 
@@ -37,7 +39,10 @@ public class AmountChangeButtonClickListener implements View.OnClickListener {
         }
 
         this.mCustomIngredient.setAmount(this.mCustomIngredient.getAmount() + mAmountChange);
-        this.mAmountTextView.setText(this.mCustomIngredient.getAmount().toString());
+        this.mViewHolder.txtAmount.setText(this.mCustomIngredient.getAmount().toString());
+        this.mViewHolder.totalPrice.setText(NumberFormatterUtil.getCurrencyString(
+                mCustomIngredient.getIngredient().getPrice().multiply(
+                        BigDecimal.valueOf(mCustomIngredient.getAmount()))));
         this.mView.updateTotal();
     }
 }

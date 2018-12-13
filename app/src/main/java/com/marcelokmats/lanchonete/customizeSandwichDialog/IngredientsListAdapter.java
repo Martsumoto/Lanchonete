@@ -17,6 +17,8 @@ import com.marcelokmats.lanchonete.model.Ingredient;
 import com.marcelokmats.lanchonete.util.ImageUtil;
 import com.marcelokmats.lanchonete.util.NumberFormatterUtil;
 
+import java.math.BigDecimal;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -50,14 +52,16 @@ public class IngredientsListAdapter extends RecyclerView.Adapter<IngredientsList
             Ingredient ingredient = customIngredient.getIngredient();
 
             holder.name.setText(ingredient.getName());
-            holder.price.setText(NumberFormatterUtil.getCurrencyString(ingredient.getPrice()));
+            holder.unitPrice.setText(NumberFormatterUtil.getCurrencyString(ingredient.getPrice()));
+            holder.totalPrice.setText(NumberFormatterUtil.getCurrencyString(
+                    ingredient.getPrice().multiply(BigDecimal.valueOf(customIngredient.getAmount()))));
             ImageUtil.setupImage(this.mContext, ingredient.getImageUrl(), holder.imgIngredient);
 
             holder.txtAmount.setText(customIngredient.getAmount().toString());
             holder.btnPlus.setOnClickListener(new AmountChangeButtonClickListener(
-                    customIngredient, 1, holder.txtAmount, mView));
+                    customIngredient, 1, holder, mView));
             holder.btnMinus.setOnClickListener(new AmountChangeButtonClickListener(
-                    customIngredient, -1, holder.txtAmount, mView));
+                    customIngredient, -1, holder, mView));
         }
     }
 
@@ -75,8 +79,11 @@ public class IngredientsListAdapter extends RecyclerView.Adapter<IngredientsList
         @BindView(R.id.imgIngredient)
         ImageView imgIngredient;
 
-        @BindView(R.id.txtPrice)
-        TextView price;
+        @BindView(R.id.txtUnitPrice)
+        TextView unitPrice;
+
+        @BindView(R.id.txtTotalPrice)
+        TextView totalPrice;
 
         @BindView(R.id.btnMinus)
         Button btnMinus;

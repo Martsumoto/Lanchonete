@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.marcelokmats.lanchonete.R;
+import com.marcelokmats.lanchonete.model.Ingredient;
 import com.marcelokmats.lanchonete.model.Sandwich;
 import com.marcelokmats.lanchonete.sandwichDetail.SandwichDetailsActivity;
 import com.marcelokmats.lanchonete.util.ViewUtil;
@@ -57,13 +59,23 @@ public class SandwichListFragment extends Fragment implements SandwichListView {
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        if (this.mPresenter != null) {
+            this.mPresenter.onDestroy();
+        }
+    }
+
+    @Override
     public void setPresenter(SandwichListPresenter presenter) {
         this.mPresenter = presenter;
     }
 
     @Override
-    public void setSandwichList(List<Sandwich> sandwichList) {
-        this.showSandwichList(sandwichList);
+    public void setSandwichList(List<Sandwich> sandwichList,
+                                SparseArray<Ingredient> ingredientList) {
+        this.showSandwichList(sandwichList, ingredientList);
     }
 
     @Override
@@ -76,18 +88,38 @@ public class SandwichListFragment extends Fragment implements SandwichListView {
         this.startActivity(intent);
     }
 
-    private void showSandwichList(List<Sandwich> sandwichList) {
+    @Override
+    public void showProgressBar() {
+        ViewUtil.toggleVisibility(this.mRecyclerView, this.mProgressBar,
+                this.mTxtEmptyListMessage, ViewUtil.Type.PROGRESSBAR);
+    }
+
+    @Override
+    public void hideProgressBar() {
+        ViewUtil.toggleVisibility(this.mRecyclerView, this.mProgressBar,
+                this.mTxtEmptyListMessage, ViewUtil.Type.CONTENT);
+    }
+
+    @Override
+    public void showTimeoutError() {
+        ViewUtil.toggleVisibility(this.mRecyclerView, this.mProgressBar,
+                this.mTxtEmptyListMessage, ViewUtil.Type.ERROR);
+    }
+
+    private void showSandwichList(List<Sandwich> sandwichList,
+                                  SparseArray<Ingredient> ingredientList) {
         SandwichListAdapter adapter;
 
-        ViewUtil.showProgressBar(this.mRecyclerView, this.mProgressBar, false);
 
         if (sandwichList != null && sandwichList.size() > 0) {
-            adapter = new SandwichListAdapter(this, sandwichList);
+            adapter = new SandwichListAdapter(this, sandwichList, ingredientList);
             mRecyclerView.setAdapter(adapter);
             mRecyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
-            ViewUtil.showEmptyListContent(this.mRecyclerView, this.mTxtEmptyListMessage, false);
+            ViewUtil.toggleVisibility(this.mRecyclerView, this.mProgressBar,
+                    this.mTxtEmptyListMessage, ViewUtil.Type.CONTENT);
         } else {
-            ViewUtil.showEmptyListContent(this.mRecyclerView, this.mTxtEmptyListMessage, true);
+            ViewUtil.toggleVisibility(this.mRecyclerView, this.mProgressBar,
+                    this.mTxtEmptyListMessage, ViewUtil.Type.ERROR);
         }
     }
 }

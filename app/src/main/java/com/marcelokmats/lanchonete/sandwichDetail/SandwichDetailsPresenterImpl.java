@@ -7,18 +7,18 @@ import com.marcelokmats.lanchonete.api.ApiUtils;
 import com.marcelokmats.lanchonete.model.Ingredient;
 import com.marcelokmats.lanchonete.model.Sandwich;
 import com.marcelokmats.lanchonete.util.IngredientUtil;
+import com.marcelokmats.lanchonete.util.RxUtils;
 
 import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
-public class SandwichDetailsPresenterImpl implements SandwichDetailsPresenter,
-        Callback<List<Ingredient>> {
+public class SandwichDetailsPresenterImpl implements SandwichDetailsPresenter {
 
     private SandwichDetailsView mView;
 
@@ -28,15 +28,21 @@ public class SandwichDetailsPresenterImpl implements SandwichDetailsPresenter,
 
     private List<Integer> mCustomIngredients = null;
 
+    private Disposable mIngredientsDisposable;
+
+    private Disposable mInsertNormalSandwichDisposable;
+
     public SandwichDetailsPresenterImpl(SandwichDetailsView mView) {
         this.mView = mView;
     }
 
     @Override
     public void fetchSandwichIngredients() {
+        this.mView.showProgressBar();
         if (this.mSandwich != null) {
-            Call<List<Ingredient>> call = ApiUtils.getInterface().getIngredients();
-            call.enqueue(this);
+            mIngredientsDisposable = ApiUtils.getInterface().getIngredients().subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(this::onIngredientsLoaded, this::onSandwichIngredientError);
         }
     }
 
@@ -47,24 +53,23 @@ public class SandwichDetailsPresenterImpl implements SandwichDetailsPresenter,
 
     @Override
     public void insertSandwich() {
-        Call<Void> call = null;
         JSONArray jsonArray = null;
 
         if (mCustomIngredients != null) {
             jsonArray = new JSONArray(this.mCustomIngredients);
 
-            call = ApiUtils.getInterface().insertCustomSandwichIntoOrder(
-                    this.mSandwich.getId(), jsonArray.toString());
+            mInsertNormalSandwichDisposable = ApiUtils.getInterface()
+                    .insertCustomSandwichIntoOrder(this.mSandwich.getId(), jsonArray.toString())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(v -> insertionSuccessful(), this::insertionError);
         } else {
-            call = ApiUtils.getInterface().insertSandwichIntoOrder(this.mSandwich.getId());
+            mInsertNormalSandwichDisposable = ApiUtils.getInterface()
+                    .insertSandwichIntoOrder(this.mSandwich.getId())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(v -> insertionSuccessful(), this::insertionError);
         }
-
-        call.enqueue(new OrderInsertionCallback(this));
-    }
-
-    @Override
-    public void insertionSuccessful() {
-        this.mView.finishActivity();
     }
 
     @Override
@@ -88,25 +93,38 @@ public class SandwichDetailsPresenterImpl implements SandwichDetailsPresenter,
     }
 
     @Override
+    public void onDestroy() {
+        RxUtils.unsubscribe(this.mIngredientsDisposable, mInsertNormalSandwichDisposable);
+    }
+
+    @Override
     public Sandwich getSandwich() {
         return this.mSandwich;
     }
 
-    @Override
-    public void onResponse(Call<List<Ingredient>> call, Response<List<Ingredient>> response) {
-        if (response != null && response.body() != null) {
-            this.mAllIngredients = IngredientUtil.transformListIntoSparseArray(response.body());
+    private void onIngredientsLoaded(List<Ingredient> ingredientList) {
+        if (ingredientList != null) {
+            this.mAllIngredients = IngredientUtil.transformListIntoSparseArray(ingredientList);
             this.mView.populateSandwichInfo(this.mSandwich, this.mCustomIngredients, this.mAllIngredients);
             this.mView.setActionBarTitle(mSandwich.getName());
-            this.mView.showProgressBar(false);
+            this.mView.hideProgressBar();
             Log.d("Lanchonete", "Sandwich ingredients received");
-        } else {
+        } else{
+            this.mView.showTimeoutError();
             Log.d("Lanchonete", "Could not load sandwich ingredients");
         }
     }
 
-    @Override
-    public void onFailure(Call<List<Ingredient>> call, Throwable t) {
+    private void onSandwichIngredientError(Throwable t) {
         Log.e("Lanchonete", "Could not load sandwich ingredients", t);
+        this.mView.showTimeoutError();
+    }
+
+    private void insertionSuccessful() {
+        this.mView.finishActivity();
+    }
+
+    private void insertionError(Throwable t) {
+        Log.e("Lanchonete", "Error while inserting a sandwich", t);
     }
 }

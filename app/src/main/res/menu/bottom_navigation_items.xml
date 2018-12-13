@@ -2,11 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/action_sandwich"
+        android:icon="@drawable/hamburger"
         android:title="@string/sandwiches"/>
     <item
         android:id="@+id/action_promotion"
+        android:icon="@drawable/promotion"
         android:title="@string/promotions"/>
     <item
         android:id="@+id/action_order"
+        android:icon="@drawable/order"
         android:title="@string/order"/>
 </menu>
