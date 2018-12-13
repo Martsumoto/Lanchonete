@@ -11,8 +11,8 @@ public class ImageUtil {
 
     public static void setupImage(Context context, String imageUrl, ImageView imageHolder) {
         RequestOptions requestOptions = new RequestOptions();
-        requestOptions.placeholder(R.drawable.hamburger);
-        requestOptions.error(android.R.drawable.stat_notify_error);
+        requestOptions.placeholder(R.drawable.image_load_error);
+        requestOptions.error(R.drawable.image_load_error);
 
         Glide.with(context).setDefaultRequestOptions(requestOptions).load(imageUrl).into(imageHolder);
     }
