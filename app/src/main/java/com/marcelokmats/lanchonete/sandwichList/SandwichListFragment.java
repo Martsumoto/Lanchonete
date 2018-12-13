@@ -78,7 +78,6 @@ public class SandwichListFragment extends Fragment implements SandwichListView {
 
     private void showSandwichList(List<Sandwich> sandwichList) {
         SandwichListAdapter adapter;
-        RecyclerView list;
 
         ViewUtil.showProgressBar(this.mRecyclerView, this.mProgressBar, false);
 

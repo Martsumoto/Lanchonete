@@ -2,6 +2,7 @@ package com.marcelokmats.lanchonete.util;
 
 import android.util.SparseArray;
 
+import com.marcelokmats.lanchonete.model.CustomIngredient;
 import com.marcelokmats.lanchonete.model.Ingredient;
 
 import java.math.BigDecimal;
@@ -29,6 +30,20 @@ public class PriceUtil {
         }
 
         return PriceUtil.value(ingredientList);
+    }
+
+    public static BigDecimal value(SparseArray<CustomIngredient> customIngredientsList) {
+        SparseArray<Ingredient> ingredientList = new SparseArray<>();
+
+        for (int i = 0; i < customIngredientsList.size(); i++) {
+            int key = customIngredientsList.keyAt(i);
+            CustomIngredient customIngredient = customIngredientsList.get(key);
+
+            ingredientList.put(customIngredient.getIngredientId(), customIngredient.getIngredient());
+        }
+
+        return PriceUtil.value(
+                IngredientUtil.transformCustomIngredientsList(customIngredientsList), ingredientList);
     }
 
     public static BigDecimal value(List<Ingredient> ingredients) {

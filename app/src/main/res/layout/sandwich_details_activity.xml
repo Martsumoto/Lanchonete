@@ -11,55 +11,78 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
-    <LinearLayout
+    <android.support.constraint.ConstraintLayout
         android:id="@+id/layoutContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="invisible"
-        android:orientation="vertical">
+        android:visibility="invisible">
         <ImageView
             android:id="@+id/imgSandwich"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <TextView
-            android:id="@+id/txtName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <TextView
-            android:id="@+id/txtPrice"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <TextView
-            android:id="@+id/txtIngredients"
-            android:layout_width="match_parent"
+            android:adjustViewBounds="true"
+            android:scaleType="fitStart"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintWidth_percent="0.5"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"/>
 
         <LinearLayout
-            android:id="@+id/buttonsLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <Button
-                android:id="@+id/btnAddCart"
-                android:layout_width="0dp"
-                android:layout_height="@dimen/button_height"
-                android:text="@string/add_to_cart_button"
-                android:textStyle="bold"
-                android:layout_weight="1"
-                android:layout_margin="@dimen/default_margin"
-                android:textAllCaps="false"/>
-            <Button
-                android:id="@+id/btnCustomize"
-                android:layout_width="0dp"
-                android:layout_height="@dimen/button_height"
-                android:layout_weight="1"
-                android:layout_margin="@dimen/default_margin"
-                android:text="@string/customize_button"
-                android:textStyle="bold"
-                android:textAllCaps="false"/>
+            app:layout_constraintTop_toBottomOf="@id/imgSandwich"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    style="@style/TextView_LabelStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/price_label"/>
+                <TextView
+                    android:id="@+id/txtPrice"
+                    style="@style/TextView_ValueStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+            <TextView
+                style="@style/TextView_LabelStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/ingredients_label"/>
+
+            <TextView
+                android:id="@+id/txtIngredients"
+                style="@style/TextView_ValueStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <LinearLayout
+                android:id="@+id/buttonsLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <Button
+                    android:id="@+id/btnAddCart"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/button_height"
+                    android:text="@string/add_to_cart_button"
+                    android:textStyle="bold"
+                    android:layout_weight="1"
+                    android:layout_margin="@dimen/default_margin"
+                    android:textAllCaps="false"/>
+                <Button
+                    android:id="@+id/btnCustomize"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/button_height"
+                    android:layout_weight="1"
+                    android:layout_margin="@dimen/default_margin"
+                    android:text="@string/customize_button"
+                    android:textStyle="bold"
+                    android:textAllCaps="false"/>
+            </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
+    </android.support.constraint.ConstraintLayout>
 </android.support.constraint.ConstraintLayout>

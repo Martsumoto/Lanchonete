@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.marcelokmats.lanchonete.R;
 import com.marcelokmats.lanchonete.model.Sandwich;
 import com.marcelokmats.lanchonete.util.ImageUtil;
+import com.marcelokmats.lanchonete.util.IngredientUtil;
 
 import java.util.List;
 
@@ -66,6 +67,12 @@ public class SandwichListAdapter extends RecyclerView.Adapter<SandwichListAdapte
 
         @BindView(R.id.txtName)
         TextView name;
+
+        @BindView(R.id.txtIngredients)
+        TextView ingredients;
+
+        @BindView(R.id.txtPrice)
+        TextView price;
 
         @BindView(R.id.imgSandwich)
         ImageView imgSandwich;

@@ -16,6 +16,8 @@ import com.marcelokmats.lanchonete.model.Order;
 import com.marcelokmats.lanchonete.model.Sandwich;
 import com.marcelokmats.lanchonete.util.ImageUtil;
 import com.marcelokmats.lanchonete.util.IngredientUtil;
+import com.marcelokmats.lanchonete.util.NumberFormatterUtil;
+import com.marcelokmats.lanchonete.util.PriceUtil;
 
 import java.util.List;
 
@@ -56,24 +58,29 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
         Order order = mOrderList.get(i);
         Sandwich sandwich = null;
         List<Integer> sandwichIngredients;
+        String sandwichName;
 
         if (order != null) {
             holder.order = order;
             sandwich = this.mSandwichList.get(order.getSandwichId());
 
-            if (order.getIngredients() != null) {
+            if (order.getIngredients() != null && order.getIngredients().size() > 0) {
                 // Has custom ingredients
+                sandwichName = sandwich.getName() + " " + this.mContext.getString(R.string.your_way_suffix);
                 sandwichIngredients = order.getIngredients();
             } else {
                 // No custom ingredients, use default menu sandwich ingredients
+                sandwichName = sandwich.getName();
                 sandwichIngredients = sandwich.getIngredients();
             }
 
+            holder.mTxtPrice.setText(NumberFormatterUtil.getCurrencyString(
+                    PriceUtil.value(sandwichIngredients, mIngredientList)));
             holder.ingredients.setText(IngredientUtil.getIngredientsAsString(sandwichIngredients, this.mIngredientList));
 
 
             if (sandwich != null) {
-                holder.name.setText(sandwich.getName());
+                holder.name.setText(sandwichName);
                 ImageUtil.setupImage(this.mContext, sandwich.getImageUrl(), holder.imgSandwich);
             }
 
@@ -94,6 +101,9 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
 
         @BindView(R.id.imgSandwich)
         ImageView imgSandwich;
+
+        @BindView(R.id.txtPrice)
+        TextView mTxtPrice;
 
         @BindView(R.id.txtIngredients)
         TextView ingredients;

@@ -28,6 +28,5 @@ public class AllIngredientsCallback implements Callback<List<Ingredient>> {
     @Override
     public void onFailure(Call<List<Ingredient>> call, Throwable t) {
         Log.e("Lanchonete", "Could not fetch all ingredients", t);
-
     }
 }

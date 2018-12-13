@@ -17,14 +17,35 @@
         android:id="@+id/txtName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        style="@style/TextView_SubTitleStyle"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@id/imgSandwich"/>
+    <LinearLayout
+        android:id="@+id/layoutPrice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/txtName"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/imgSandwich">
+        <TextView
+            style="@style/TextView_LabelStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/price_label"/>
+        <TextView
+            android:id="@+id/txtPrice"
+            style="@style/TextView_ValueStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
     <TextView
         android:id="@+id/txtIngredients"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/txtName"
+        style="@style/TextView_ValueStyle"
+        app:layout_constraintTop_toBottomOf="@id/layoutPrice"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@id/imgSandwich"/>
 </android.support.constraint.ConstraintLayout>

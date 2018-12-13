@@ -1,6 +1,11 @@
 package com.marcelokmats.lanchonete.sandwichDetail;
 
+import android.util.SparseArray;
+
+import com.marcelokmats.lanchonete.model.Ingredient;
 import com.marcelokmats.lanchonete.model.Sandwich;
+
+import java.util.List;
 
 public interface SandwichDetailsPresenter {
 
@@ -8,4 +13,9 @@ public interface SandwichDetailsPresenter {
     void setSandwich(Sandwich sandwich);
     void insertSandwich();
     void insertionSuccessful();
+    void updateCustomizedSandwich(List<Integer>customIngredientsId);
+
+    SparseArray<Ingredient> getAllIngredients();
+    List<Integer> getCustomIngredients();
+    Sandwich getSandwich();
 }

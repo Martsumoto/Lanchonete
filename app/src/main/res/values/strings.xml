@@ -13,4 +13,9 @@
     <string name="sandwich_empty">Não há lanches</string>
     <string name="button_cancel">Cancelar</string>
     <string name="button_confirm">Confirmar</string>
+    <string name="your_way_suffix">- do seu jeito</string>
+    <string name="customize_your_sandwich">Customize seu lanche</string>
+    <string name="ingredients_label">Ingredientes:</string>
+    <string name="price_label">Preço:</string>
+    <string name="total_label">Total:</string>
 </resources>

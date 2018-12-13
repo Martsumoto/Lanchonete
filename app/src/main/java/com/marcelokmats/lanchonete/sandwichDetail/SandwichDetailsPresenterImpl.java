@@ -10,6 +10,7 @@ import com.marcelokmats.lanchonete.util.IngredientUtil;
 
 import org.json.JSONArray;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -25,7 +26,7 @@ public class SandwichDetailsPresenterImpl implements SandwichDetailsPresenter,
 
     private SparseArray<Ingredient> mAllIngredients;
 
-    private List<Ingredient> mCustomIngredients = null;
+    private List<Integer> mCustomIngredients = null;
 
     public SandwichDetailsPresenterImpl(SandwichDetailsView mView) {
         this.mView = mView;
@@ -67,10 +68,35 @@ public class SandwichDetailsPresenterImpl implements SandwichDetailsPresenter,
     }
 
     @Override
+    public SparseArray<Ingredient> getAllIngredients() {
+        return this.mAllIngredients;
+    }
+
+    @Override
+    public List<Integer> getCustomIngredients() {
+        return this.mCustomIngredients;
+    }
+
+    @Override
+    public void updateCustomizedSandwich(List<Integer> customIngredientsId) {
+        if (mCustomIngredients == null) {
+            mCustomIngredients = new ArrayList<>();
+        }
+        this.mCustomIngredients.clear();
+        this.mCustomIngredients.addAll(customIngredientsId);
+        this.mView.populateSandwichInfo(this.mSandwich, this.mCustomIngredients, this.mAllIngredients);
+    }
+
+    @Override
+    public Sandwich getSandwich() {
+        return this.mSandwich;
+    }
+
+    @Override
     public void onResponse(Call<List<Ingredient>> call, Response<List<Ingredient>> response) {
         if (response != null && response.body() != null) {
             this.mAllIngredients = IngredientUtil.transformListIntoSparseArray(response.body());
-            this.mView.populateSandwichInfo(this.mSandwich, this.mAllIngredients);
+            this.mView.populateSandwichInfo(this.mSandwich, this.mCustomIngredients, this.mAllIngredients);
             this.mView.setActionBarTitle(mSandwich.getName());
             this.mView.showProgressBar(false);
             Log.d("Lanchonete", "Sandwich ingredients received");
