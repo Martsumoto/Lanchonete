@@ -1,5 +1,5 @@
 # Lanchonete
-Dextra project - Processo Seletivo
+Dextra | Processo Seletivo - Android Developer
 
 Esta aplicação tem o objetivo de realizar a venda de lanches.
 Os lanches podem ser escolhidos de uma lista do cardápio e podem ser customizados.
