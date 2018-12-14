@@ -14,3 +14,5 @@ Pontos a serem melhorados ou finalizados:
  - Tratamento de erros/exceções nas consultas do servidor e retorno do retrofit
  - Implementação de um sistema de cache eficiente nas buscas do servidor
  
+
+A implementação deste projeto foi feita na arquitetura MVP devido a sua maior flexibidade, que, pela restrição de tempo e complexidade do projeto, foi considerado como um fator importante na decisão da arquitetura.
